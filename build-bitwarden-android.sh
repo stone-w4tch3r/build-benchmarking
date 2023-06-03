@@ -5,29 +5,22 @@ echo "This script will clone the Bitwarden Mobile repository and build Android p
 echo "Removing old files..."
 rm -rf bitwarden-repo
 
+#???
+sudo apt install openjdk-8-jdk
+
 echo "Cloning Bitwarden Mobile repository..."
 git clone --depth 1 https://github.com/bitwarden/mobile bitwarden-repo
+cd bitwarden-repo || exit
 git fetch --unshallow
 
-cd bitwarden-repo || exit
-
-echo "Restoring NuGet packages..."
 nuget restore
-
-echo "Restoring dotnet tool..."
 dotnet tool restore
-
-echo "Checking with dotnet-format..."
 dotnet tool run dotnet-format --check
-
-echo "Preparing build with cake..."
 dotnet cake build.cake --target Android --variant prod
 
 echo "Building Android project in Debug..."
-msbuild src/android/Android.csproj /p:Configuration=Debug
-
-echo "Cleaning Android project..."
-msbuild src/android/Android.csproj /t:Clean
+msbuild src/Android/Android.csproj /p:Configuration=Debug
 
 echo "Building Android project in Debug again..."
-msbuild src/android/Android.csproj /p:Configuration=Debug
+msbuild src/Android/Android.csproj /t:Clean
+msbuild src/Android/Android.csproj /p:Configuration=Debug
